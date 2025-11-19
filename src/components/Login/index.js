@@ -41,13 +41,11 @@ class Login extends Component {
     history.replace("/signup");
   };
 
-  onLoginSuccess = (jwtToken) => {
-    // ✅ Save JWT in cookies (secure way, not localStorage)
-    Cookies.set("jwt_token", jwtToken, { expires: 30 });
+  onLoginSuccess = () => {
+  const { history } = this.props;
+  history.replace("/avatars");
+};
 
-    const { history } = this.props;
-    history.replace("/avatars"); // go to avatar selection after login
-  };
 
   onLoginFailure = (error) => {
     if (this._isMounted) {
@@ -67,16 +65,16 @@ class Login extends Component {
     try {
       const response = await fetch("https://major-project-backend-u1ju.onrender.com/api/auth/login", {
         method: "POST",
-        credentials: "include", // ✅ include cookies
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include", // ✅ include cookies
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        this.onLoginSuccess(data.jwt_token);
-      } else {
+  this.onLoginSuccess();
+} else {
         this.onLoginFailure(data.error_msg || "Login failed. Try again.");
       }
     } catch (err) {
